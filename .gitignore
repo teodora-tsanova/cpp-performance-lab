@@ -1,0 +1,7 @@
+# Build output
+build/
+app
+
+# Python
+__pycache__/
+*.py[cod]
