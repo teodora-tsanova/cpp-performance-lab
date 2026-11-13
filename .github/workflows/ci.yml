@@ -6,6 +6,13 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      repetitions:
+        description: Number of benchmark repetitions
+        required: true
+        default: 5
+        type: number
 
 jobs:
   build-and-test:
@@ -28,3 +35,23 @@ jobs:
 
       - name: Run C++ unit tests
         run: make unit-test
+
+  benchmark:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential python3
+
+      - name: Build benchmark executables
+        run: make benchmark-build
+
+      - name: Run performance benchmarks
+        run: |
+          python3 benchmarks/run_benchmarks.py \
+            --repetitions "${{ inputs.repetitions || 5 }}"
